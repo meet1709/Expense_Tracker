@@ -3,7 +3,9 @@ import 'package:expense_tracker_ui/constants/constants.dart';
 import 'package:expense_tracker_ui/models/expense.dart';
 import 'package:expense_tracker_ui/screens/addExpenseScreen.dart';
 import 'package:expense_tracker_ui/screens/settingsScreen.dart';
+import 'package:expense_tracker_ui/ui_widgets/MyGradientAppBar.dart';
 import 'package:expense_tracker_ui/ui_widgets/TotalExpenseWidget.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import '../ui_widgets/Bar_chart.dart';
@@ -14,7 +16,8 @@ import 'expense_list_screen.dart';
 
 class AnalyticScreen extends StatefulWidget {
   final List<Expense> expenses;
-  AnalyticScreen({
+
+  const AnalyticScreen({
     Key? key,
     required this.expenses,
   }) : super(key: key);
@@ -24,7 +27,8 @@ class AnalyticScreen extends StatefulWidget {
 }
 
 class _AnalyticScreenState extends State<AnalyticScreen> {
-  final List<Map<String, dynamic>> monthWiseExpenses = [
+  // Data for charts
+  final List<Map<String, dynamic>> _monthWiseExpenses = [
     {'month': 'January', 'amount': 1500.0},
     {'month': 'February', 'amount': 1200.0},
     {'month': 'March', 'amount': 1000.0},
@@ -33,8 +37,7 @@ class _AnalyticScreenState extends State<AnalyticScreen> {
     {'month': 'June', 'amount': 1200.0},
   ];
 
-  // Example data for bar chart (category-wise expenses)
-  final List<Map<String, dynamic>> categoryWiseExpenses = [
+  final List<Map<String, dynamic>> _categoryWiseExpenses = [
     {'category': 'Food', 'amount': 2000.0},
     {'category': 'Transportation', 'amount': 1200.0},
     {'category': 'Clothes', 'amount': 1500.0},
@@ -56,32 +59,41 @@ class _AnalyticScreenState extends State<AnalyticScreen> {
     "Others"
   ];
 
+  // Navigation functions
   void _openAddExpenseScreen() {
-    Navigator.push(
+    Navigator.pushReplacement(
       context,
-      MaterialPageRoute(builder: (context) => const AddExpenseScreen()),
+      CupertinoPageRoute(builder: (_) => const AddExpenseScreen()),
     );
   }
 
-  // Open Analytics Screen
   void _openExpenseListScreen() {
-    Navigator.push(
-        context, MaterialPageRoute(builder: (context) => ExpenseListScreen()));
+    Navigator.pushReplacement(
+        context, CupertinoPageRoute(builder: (_) => ExpenseListScreen()));
   }
 
   void _openSettingsScreen() {
-    Navigator.push(
-        context, MaterialPageRoute(builder: (context) => SettingScreen()));
+    Navigator.pushReplacement(
+        context, CupertinoPageRoute(builder: (_) => SettingScreen()));
   }
 
-  void _openBudgestScreen() {
-    Navigator.push(
-        context, MaterialPageRoute(builder: (context) => BudgetScreen()));
+  void _openBudgetScreen() {
+    Navigator.pushReplacement(
+        context, CupertinoPageRoute(builder: (_) => BudgetScreen()));
   }
 
   @override
   Widget build(BuildContext context) {
-    int currentIndex = 1;
+    return Scaffold(
+      backgroundColor: Colors.transparent,
+      appBar: const MyGradientAppBar(title: "Analytics"),
+      body: SafeArea(child: _buildBody()),
+      bottomNavigationBar: _buildBottomNavigationBar(),
+    );
+  }
+
+  // Build body
+  Widget _buildBody() {
     return Container(
       decoration: BoxDecoration(
         gradient: LinearGradient(
@@ -90,121 +102,140 @@ class _AnalyticScreenState extends State<AnalyticScreen> {
           end: Alignment.bottomRight,
         ),
       ),
-      child: Scaffold(
-        backgroundColor: Colors.transparent,
-        appBar: AppBar(
-          elevation: 0,
-          flexibleSpace: Container(
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: [Colors.blue.shade800, Colors.black],
-                begin: Alignment.topLeft,
-              ),
+      child: _buildContent(),
+    );
+  }
+
+  // Build content
+  Widget _buildContent() {
+    return SingleChildScrollView(
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const SizedBox(
+              height: 20,
             ),
-          ),
-          title: const Text(
-            "Analytics",
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
-              fontStyle: FontStyle.italic,
+            _buildTotalExpenseWidget(),
+            const SizedBox(
+              height: 20,
             ),
-          ),
-          centerTitle: true,
-        ),
-        body: SingleChildScrollView(
-          child: Padding(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Padding(
-                  padding: MediaQuery.of(context).size.width > 600
-                      ? EdgeInsets.symmetric(horizontal: 50)
-                      : EdgeInsets.symmetric(horizontal: 15),
-                  child: TotalExpenseWidget(),
-                ),
-                const SizedBox(height: 20),
-                // Bar Chart Section
-                Text(
-                  'Month-wise Expense Breakdown:',
-                  style: TextStyle(color: Colors.white, fontSize: 16),
-                ),
-                const SizedBox(height: 10),
-                SizedBox(
-                  height: 300,
-                  child: BarChartWidget(
-                    expenses: widget.expenses,
-                  ),
-                ),
-                const SizedBox(height: 20),
-                // Pie Chart Section
-                Text(
-                  'Category-wise Expense Breakdown:',
-                  style: TextStyle(color: Colors.white, fontSize: 16),
-                ),
-                const SizedBox(height: 10),
-                SizedBox(
-                  height: 300,
-                  child: PieChartWithHover(
-                    expenses: widget.expenses,
-                  ),
-                ),
-                const SizedBox(height: 20),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Column(
-                        mainAxisSize: MainAxisSize.min,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: List.generate(_categories.length, (index) {
-                          return Padding(
-                              padding: const EdgeInsets.symmetric(vertical: 5),
-                              child: Row(
-                                children: [
-                                  // Color Block
-                                  Container(
-                                    width: 20,
-                                    height: 20,
-                                    color: pieChartColors[
-                                        index % pieChartColors.length],
-                                  ),
-                                  const SizedBox(width: 8),
-                                  // Category Name
-                                  Text(
-                                    _categories[index],
-                                    style: const TextStyle(
-                                        color: Colors.white, fontSize: 12),
-                                  ),
-                                ],
-                              ));
-                        })),
-                  ],
-                ),
-              ],
+            _buildMonthWiseExpenseChart(),
+            const SizedBox(
+              height: 20,
             ),
-          ),
-        ),
-        bottomNavigationBar: CustomBottomNavBar(
-          currentIndex: currentIndex,
-          onTap: (index) {
-            setState(() {
-              currentIndex = index;
-              if (index == 0) {
-                _openExpenseListScreen();
-              } else if (index == 2) {
-                _openAddExpenseScreen();
-              } else if (index == 3) {
-                _openBudgestScreen();
-              } else if (index == 4) {
-                _openSettingsScreen();
-              }
-            });
-          },
+            _buildCategoryWiseExpenseChart(),
+            const SizedBox(
+              height: 20,
+            ),
+            _buildCategoryLegend(),
+          ],
         ),
       ),
+    );
+  }
+
+  // Build total expense widget
+  Widget _buildTotalExpenseWidget() {
+    return Padding(
+      padding: MediaQuery.of(context).size.width > 600
+          ? const EdgeInsets.symmetric(horizontal: 50)
+          : const EdgeInsets.symmetric(horizontal: 15),
+      child: const TotalExpenseWidget(),
+    );
+  }
+
+  // Build month-wise expense chart
+  Widget _buildMonthWiseExpenseChart() {
+    return Column(
+      children: [
+        const Text(
+          'Month-wise Expense Breakdown:',
+          style: TextStyle(color: Colors.white, fontSize: 16),
+        ),
+        const SizedBox(height: 10),
+        SizedBox(
+          height: 300,
+          child: BarChartWidget(
+            expenses: widget.expenses,
+          ),
+        ),
+      ],
+    );
+  }
+
+  // Build category-wise expense chart
+  Widget _buildCategoryWiseExpenseChart() {
+    return Column(
+      children: [
+        const Text(
+          'Category-wise Expense Breakdown:',
+          style: TextStyle(color: Colors.white, fontSize: 16),
+        ),
+        const SizedBox(height: 10),
+        SizedBox(
+          height: 300,
+          child: PieChartWithHover(
+            expenses: widget.expenses,
+          ),
+        ),
+      ],
+    );
+  }
+
+  // Build category legend
+  Widget _buildCategoryLegend() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: List.generate(_categories.length, (index) {
+            return Padding(
+              padding: const EdgeInsets.symmetric(vertical: 5),
+              child: Row(
+                children: [
+                  // Color block
+                  Container(
+                    width: 20,
+                    height: 20,
+                    color: pieChartColors[index % pieChartColors.length],
+                  ),
+                  const SizedBox(width: 8),
+                  // Category name
+                  Text(
+                    _categories[index],
+                    style: const TextStyle(color: Colors.white, fontSize: 12),
+                  ),
+                ],
+              ),
+            );
+          }),
+        ),
+      ],
+    );
+  }
+
+  // Build bottom navigation bar
+  Widget _buildBottomNavigationBar() {
+    return CustomBottomNavBar(
+      currentIndex: 1,
+      onTap: (index) {
+        setState(() {
+          if (index == 0) {
+            _openExpenseListScreen();
+          } else if (index == 2) {
+            _openAddExpenseScreen();
+          } else if (index == 3) {
+            _openBudgetScreen();
+          } else if (index == 4) {
+            _openSettingsScreen();
+          }
+        });
+      },
     );
   }
 }

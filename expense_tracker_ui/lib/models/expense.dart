@@ -1,8 +1,5 @@
-
-
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 class Expense {
-
   final int? id;
   final String category;
   final String description;
@@ -16,19 +13,16 @@ class Expense {
     required this.amount,
     required this.date,
   });
-  
 
-    factory Expense.fromJson(Map<String, dynamic> json) {
+  factory Expense.fromJson(Map<String, dynamic> json) {
     return Expense(
-      id: json['id'] as int? ,
+      id: json['id'] as int?,
       category: json['category'] as String,
       description: json['description'] as String,
       amount: (json['amount'] as num).toDouble(),
       date: json['date'] as String,
     );
   }
-
-
 
   Expense copyWith({
     int? id,
@@ -66,7 +60,7 @@ class Expense {
     );
   }
 
-    // Convert to JSON
+  // Convert to JSON
   Map<String, dynamic> toJson() {
     return {
       'id': id,
@@ -77,7 +71,6 @@ class Expense {
     };
   }
 
-
   @override
   String toString() {
     return 'Expense(id: $id, category: $category, description: $description, amount: $amount, date: $date)';
@@ -86,21 +79,20 @@ class Expense {
   @override
   bool operator ==(covariant Expense other) {
     if (identical(this, other)) return true;
-  
-    return 
-      other.id == id &&
-      other.category == category &&
-      other.description == description &&
-      other.amount == amount &&
-      other.date == date;
+
+    return other.id == id &&
+        other.category == category &&
+        other.description == description &&
+        other.amount == amount &&
+        other.date == date;
   }
 
   @override
   int get hashCode {
     return id.hashCode ^
-      category.hashCode ^
-      description.hashCode ^
-      amount.hashCode ^
-      date.hashCode;
+        category.hashCode ^
+        description.hashCode ^
+        amount.hashCode ^
+        date.hashCode;
   }
 }

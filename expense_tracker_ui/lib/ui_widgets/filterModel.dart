@@ -117,7 +117,7 @@ class _FilterModelState extends State<FilterModel> {
                   });
                 },
                 decoration: const InputDecoration(
-                   contentPadding: const EdgeInsets.symmetric(
+                   contentPadding: EdgeInsets.symmetric(
                     vertical: 15,
                     horizontal: 10,
                   ),
@@ -141,7 +141,7 @@ class _FilterModelState extends State<FilterModel> {
               ),
               Row(
                 children: [
-                  Expanded(
+                  const Expanded(
                       child: Text(
                     'Start Date : ',
                     style: TextStyle(color: Colors.white),
@@ -168,7 +168,7 @@ class _FilterModelState extends State<FilterModel> {
               const SizedBox(height: 10),
               Row(
                 children: [
-                  Expanded(
+                  const Expanded(
                       child: Text(
                     'End Date : ',
                     style: TextStyle(color: Colors.white),
@@ -201,7 +201,7 @@ class _FilterModelState extends State<FilterModel> {
                   });
                 },
                 decoration: const InputDecoration(
-                   contentPadding: const EdgeInsets.symmetric(
+                   contentPadding: EdgeInsets.symmetric(
                     vertical: 15,
                     horizontal: 10,
                   ),
@@ -241,11 +241,11 @@ class _FilterModelState extends State<FilterModel> {
             shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12)),
           ),
-          child: Text('Apply', style: TextStyle(color: Colors.white),),
+          child: const Text('Apply', style: TextStyle(color: Colors.white),),
         ),
         TextButton(
             onPressed: _resetFilters,
-            child: Text(
+            child: const Text(
               'Reset',
               style: TextStyle(color: Colors.white),
             )),
