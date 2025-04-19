@@ -3,8 +3,12 @@ import 'package:expense_tracker_ui/providers/expense_provider.dart';
 import 'package:expense_tracker_ui/screens/addExpenseScreen.dart';
 import 'package:expense_tracker_ui/screens/budgetScreen.dart';
 import 'package:expense_tracker_ui/screens/settingsScreen.dart';
+import 'package:expense_tracker_ui/ui_widgets/AnalyticWidget.dart';
+import 'package:expense_tracker_ui/ui_widgets/MyGradientAppBar.dart';
 import 'package:expense_tracker_ui/ui_widgets/expense_tile.dart';
 import 'package:expense_tracker_ui/ui_widgets/filter_action_widget.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
@@ -25,12 +29,11 @@ class _ExpenseListScreenState extends State<ExpenseListScreen> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
-    fetchExpenses();
+    _fetchExpenses();
   }
 
-  Future<void> fetchExpenses() async {
+  Future<void> _fetchExpenses() async {
     setState(() {
       _isLoading = true;
       _errorMessage = null;
@@ -50,32 +53,54 @@ class _ExpenseListScreenState extends State<ExpenseListScreen> {
     }
   }
 
-  // Open Add Expense Screen
-  void _openAddExpenseScreen() {
+  void _openAnalytics(List<Expense> expenses) {
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => const AddExpenseScreen()),
+      CupertinoPageRoute(
+          builder: (_) => AnalyticScreen(
+                expenses: expenses,
+              )),
     );
   }
 
-  // Open Analytics Screen
-  void _openAnalytics(List<Expense> expenses) {
-    Navigator.push(
-        context,
-        MaterialPageRoute(
-            builder: (context) => AnalyticScreen(
-                  expenses: expenses,
-                )));
+  void _openAddExpenseScreen() {
+    Navigator.pushReplacement(
+      context,
+      CupertinoPageRoute(builder: (_) => const AddExpenseScreen()),
+    );
   }
 
-  void _openBudgestScreen() {
-    Navigator.push(
-        context, MaterialPageRoute(builder: (context) => BudgetScreen()));
+  void _openBudgetScreen() {
+    Navigator.pushReplacement(
+      context,
+      CupertinoPageRoute(builder: (_) => const BudgetScreen()),
+    );
   }
 
   void _openSettingsScreen() {
-    Navigator.push(
-        context, MaterialPageRoute(builder: (context) => SettingScreen()));
+    Navigator.pushReplacement(
+      context,
+      CupertinoPageRoute(builder: (_) => const SettingScreen()),
+    );
+  }
+
+  void _handleNavigation(int index, List<Expense> expenses) {
+    setState(() {
+      switch (index) {
+        case 1:
+          _openAnalytics(expenses);
+          break;
+        case 2:
+          _openAddExpenseScreen();
+          break;
+        case 3:
+          _openBudgetScreen();
+          break;
+        case 4:
+          _openSettingsScreen();
+          break;
+      }
+    });
   }
 
   @override
@@ -93,169 +118,110 @@ class _ExpenseListScreenState extends State<ExpenseListScreen> {
       ),
       child: Scaffold(
         backgroundColor: Colors.transparent,
-        appBar: AppBar(
-          //backgroundColor: Colors.blue.shade900.withOpacity(0.9),
-          elevation: 0,
-          flexibleSpace: Container(
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: [
-                  Colors.blue.shade800,
-                  Colors.black,
-                ],
-                begin: Alignment.topLeft,
-              ),
-            ),
-          ),
-          title: const Text(
-            "Expenses",
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
-              fontStyle: FontStyle.italic,
-            ),
-          ),
-          centerTitle: true,
+        appBar: MyGradientAppBar(
+          title: "Expenses",
           actions: [
             filter_button(context),
           ],
         ),
-        body: _isLoading
-            ? const Center(
-                child: CircularProgressIndicator(
-                  color: Colors.white,
-                ),
-              )
-            : _errorMessage != null
-                ? Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(
-                          _errorMessage!,
-                          style: const TextStyle(
-                              color: Colors.red,
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold),
-                        ),
-                        const SizedBox(
-                          height: 10,
-                        ),
-                        ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.blue.shade700,
-                            foregroundColor: Colors.white,
-                            shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(8)),
-                          ),
-                          onPressed: fetchExpenses,
-                          child: const Text('Retry'),
-                        ),
-                      ],
-                    ),
-                  )
-                : expenses.isEmpty
-                    ? const Center(
-                        child: Text(
-                          'No expenses found.',
-                          style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold),
-                        ),
-                      )
-                    : Column(
+        body: SafeArea(
+          child: _isLoading
+              ? const Center(
+                  child: CircularProgressIndicator(
+                    color: Colors.white,
+                  ),
+                )
+              : _errorMessage != null
+                  ? Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Padding(
-                            padding: MediaQuery.of(context).size.width > 600
-                                ? EdgeInsets.symmetric(horizontal: 50)
-                                : EdgeInsets.symmetric(horizontal: 15),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              children: [
-                                TotalExpenseWidget(),
-                                const SizedBox(
-                                  width: 15,
-                                ),
-                                Container(
-                                  margin: EdgeInsets.symmetric(
-                                      vertical: 15, horizontal: 15),
-                                  padding: EdgeInsets.all(16),
-                                  decoration: BoxDecoration(
-                                    gradient: LinearGradient(
-                                        colors: [
-                                          Colors.blue.shade700,
-                                          Colors.black45
-                                        ],
-                                        begin: Alignment.topLeft,
-                                        end: Alignment.bottomRight),
-                                    borderRadius: BorderRadius.circular(12),
-                                  ),
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.center,
-                                    children: [
-                                      Text(
-                                        'Analytics View',
-                                        style: GoogleFonts.montserrat(
-                                            color: Colors.grey[50],
-                                            fontSize: 20,
-                                            fontWeight: FontWeight.w500),
-                                      ),
-                                      const SizedBox(
-                                        height: 8,
-                                      ),
-                                      IconButton(
-                                        onPressed: () {
-                                          _openAnalytics(expenses);
-                                        },
-                                        icon: Icon(
-                                          Icons.bar_chart,
-                                          color: Colors.white,
-                                          size: 30,
-                                        ),
-                                        tooltip: "View Analytics",
-                                      )
-                                    ],
-                                  ),
-                                ),
-                              ],
-                            ),
+                          Text(
+                            _errorMessage!,
+                            style: const TextStyle(
+                                color: Colors.red,
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold),
                           ),
-                          Expanded(
-                            child: Padding(
-                              padding: MediaQuery.of(context).size.width > 600
-                                  ? EdgeInsets.symmetric(horizontal: 50)
-                                  : EdgeInsets.symmetric(horizontal: 15),
-                              child: ListView.builder(
-                                padding: EdgeInsets.zero,
-                                itemCount: expenses.length,
-                                itemBuilder: (context, index) {
-                                  final expense = expenses[index];
-                                  return ExpenseTile(expense: expense);
-                                },
-                              ),
+                          const SizedBox(height: 10),
+                          ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.blue.shade700,
+                              foregroundColor: Colors.white,
+                              shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(8)),
                             ),
+                            onPressed: _fetchExpenses,
+                            child: const Text('Retry'),
                           ),
                         ],
                       ),
+                    )
+                  : expenses.isEmpty
+                      ? const Center(
+                          child: Text(
+                            'No expenses found.',
+                            style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold),
+                          ),
+                        )
+                      : Column(
+                          children: [
+                            // ✅ Horizontal scroll section
+                            Padding(
+                              padding: MediaQuery.of(context).size.width > 600
+                                  ? const EdgeInsets.symmetric(horizontal: 50)
+                                  : const EdgeInsets.symmetric(horizontal: 15),
+                              child: SizedBox(
+                                height: 150,
+                                child: ScrollConfiguration(
+                                  behavior:
+                                      const MaterialScrollBehavior().copyWith(
+                                    dragDevices: {
+                                      PointerDeviceKind.touch,
+                                      PointerDeviceKind.mouse,
+                                    },
+                                  ),
+                                  child: SingleChildScrollView(
+                                    scrollDirection: Axis.horizontal,
+                                    physics: const BouncingScrollPhysics(),
+                                    child: Row(
+                                      children: [
+                                        TotalExpenseWidget(),
+                                        const SizedBox(width: 10),
+                                        AnalyticWidget(expenses: expenses),
+                                        const SizedBox(width: 10),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                            // ✅ Expanded ListView
+                            Expanded(
+                              child: Padding(
+                                padding: MediaQuery.of(context).size.width > 600
+                                    ? const EdgeInsets.symmetric(horizontal: 50)
+                                    : const EdgeInsets.symmetric(
+                                        horizontal: 15),
+                                child: ListView.builder(
+                                  padding: EdgeInsets.zero,
+                                  itemCount: expenses.length,
+                                  itemBuilder: (context, index) {
+                                    final expense = expenses[index];
+                                    return ExpenseTile(expense: expense);
+                                  },
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+        ),
         bottomNavigationBar: CustomBottomNavBar(
           currentIndex: currentIndex,
-          onTap: (index) {
-            setState(() {
-              currentIndex = index;
-              if (index == 1) {
-                _openAnalytics(expenses);
-              } else if (index == 2) {
-                _openAddExpenseScreen();
-              } else if (index == 3) {
-                _openBudgestScreen();
-              } else if (index == 4) {
-                _openSettingsScreen();
-              }
-            });
-          },
+          onTap: (index) => _handleNavigation(index, expenses),
         ),
       ),
     );

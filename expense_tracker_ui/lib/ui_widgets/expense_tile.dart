@@ -1,4 +1,3 @@
-
 import 'package:expense_tracker_ui/models/expense.dart';
 import 'package:expense_tracker_ui/providers/expense_provider.dart';
 import 'package:flutter/material.dart';
@@ -10,7 +9,7 @@ class ExpenseTile extends StatelessWidget {
 
   final Expense expense;
 
-@override
+  @override
   Widget build(BuildContext context) {
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
@@ -26,20 +25,28 @@ class ExpenseTile extends StatelessWidget {
           BoxShadow(
             color: Colors.black.withOpacity(0.8),
             blurRadius: 10,
-            offset: const Offset(0, 5),
+            offset: const Offset(4, 6),
           ),
         ],
       ),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(20),
         child: ListTile(
-          contentPadding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+          contentPadding:
+              const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
           title: Text(
             expense.category,
             style: GoogleFonts.roboto(
               fontWeight: FontWeight.bold,
               fontSize: 18,
               color: Colors.white,
+              shadows: [
+                Shadow(
+                  color: Colors.black.withOpacity(0.5),
+                  offset: Offset(1, 1),
+                  blurRadius: 2,
+                ),
+              ],
             ),
           ),
           subtitle: Column(
@@ -49,25 +56,44 @@ class ExpenseTile extends StatelessWidget {
               Text(
                 expense.description,
                 style: GoogleFonts.roboto(
-                  color: Colors.white70,
+                  color: Colors.white,
                   fontSize: 14,
+                  shadows: [
+                    Shadow(
+                      color: Colors.black.withOpacity(0.5),
+                      offset: Offset(1, 1),
+                      blurRadius: 2,
+                    ),
+                  ],
                 ),
               ),
               const SizedBox(height: 5),
               Row(
                 children: [
-                  const Icon(Icons.calendar_today, size: 16, color: Colors.white70),
+                  const Icon(Icons.calendar_today,
+                      size: 16, color: Colors.white),
                   const SizedBox(width: 5),
                   Text(
                     'Date: ${expense.date}',
-                    style: GoogleFonts.roboto(fontSize: 12, color: Colors.white70),
+                    style: GoogleFonts.roboto(
+                      fontSize: 12,
+                      color: Colors.white,
+                      shadows: [
+                        Shadow(
+                          color: Colors.black.withOpacity(0.5),
+                          offset: Offset(1, 1),
+                          blurRadius: 2,
+                        ),
+                      ],
+                    ),
                   ),
                 ],
               ),
               const SizedBox(height: 5),
               Row(
                 children: [
-                  const Icon(Icons.monetization_on, size: 16, color: Colors.greenAccent),
+                  const Icon(Icons.monetization_on,
+                      size: 16, color: Colors.greenAccent),
                   const SizedBox(width: 5),
                   Text(
                     '\$${expense.amount}',
@@ -91,6 +117,9 @@ class ExpenseTile extends StatelessWidget {
                 icon: const Icon(Icons.edit, color: Colors.white),
                 splashRadius: 20,
               ),
+              SizedBox(
+                width: 8,
+              ),
               IconButton(
                 onPressed: () {
                   _deleteExpense(context, expense);
@@ -106,153 +135,153 @@ class ExpenseTile extends StatelessWidget {
   }
 }
 
-  void _deleteExpense(BuildContext context, Expense expense) {
-    showDialog(
-        context: context,
-        builder: (ctx) {
-          return AlertDialog(
-            backgroundColor: Colors.blue.shade900,
-            title: const Text(
-              'Delete Expense',
-              style: TextStyle(color: Colors.white),
-            ),
-            content: const Text(
-              'Are you sure you want to delete this expense?',
-              style: TextStyle(color: Colors.white70),
-            ),
-            actions: [
-              TextButton(
-                  onPressed: () {
-                    Provider.of<ExpenseProvider>(context, listen: false)
-                        .deleteExpense(expense.id!)
-                        .then((_) {
-                      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                        content: Text('Expense Deleted successfully!'),
-                      ));
-                    }).catchError((onError) {
-                      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                          content: Text('Failed to delete Expense')));
-                    });
-
-                    Navigator.of(ctx).pop();
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.redAccent,
-                  ),
-                  child: const Text(
-                    'Delete',
-                    style: TextStyle(color: Colors.white, fontSize: 15),
-                  )),
-              TextButton(
-                  onPressed: () {
-                    Navigator.of(ctx).pop();
-                  },
-                  child: const Text(
-                    'Cancel',
-                    style: TextStyle(color: Colors.white, fontSize: 15),
-                  )),
-            ],
-          );
-        });
-  }
-
-  void _modifyExpense(BuildContext context, Expense expense) {
-    final _categoryController = TextEditingController(
-      text: expense.category,
-    );
-    final _descriptionController =
-        TextEditingController(text: expense.description);
-    final _amountController =
-        TextEditingController(text: expense.amount.toString());
-
-    showDialog(
-        context: context,
-        builder: (ctx) {
-          return AlertDialog(
-            backgroundColor: Colors.blue.shade900,
-            title: const Text(
-              'Modify Expense',
-              style: TextStyle(color: Colors.white),
-            ),
-            content: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                TextFormField(
-                  style: TextStyle(color: Colors.white),
-                  controller: _categoryController,
-                  decoration: InputDecoration(
-                    labelText: 'Category',
-                    labelStyle: TextStyle(color: Colors.white),
-                    errorStyle: TextStyle(color: Colors.yellow),
-                  ),
-                  validator: (value) =>
-                      value!.isEmpty ? 'Please Enter a category' : null,
-                ),
-                TextFormField(
-                  style: TextStyle(color: Colors.white),
-                  controller: _descriptionController,
-                  decoration: InputDecoration(
-                    labelText: 'Description',
-                    labelStyle: TextStyle(color: Colors.white),
-                    errorStyle: TextStyle(color: Colors.yellow),
-                  ),
-                  validator: (value) =>
-                      value!.isEmpty ? 'Please enter a description' : null,
-                ),
-                TextFormField(
-                  style: TextStyle(color: Colors.white),
-                  controller: _amountController,
-                  keyboardType: TextInputType.number,
-                  decoration: InputDecoration(
-                    labelText: 'Amount',
-                    labelStyle: TextStyle(color: Colors.white),
-                    errorStyle: TextStyle(color: Colors.yellow),
-                  ),
-                  validator: (value) =>
-                      value!.isEmpty || double.tryParse(value) == null
-                          ? 'Please enter a valid amount'
-                          : null,
-                ),
-              ],
-            ),
-            actions: [
-              TextButton(
+void _deleteExpense(BuildContext context, Expense expense) {
+  showDialog(
+      context: context,
+      builder: (ctx) {
+        return AlertDialog(
+          backgroundColor: Colors.blue.shade900,
+          title: const Text(
+            'Delete Expense',
+            style: TextStyle(color: Colors.white),
+          ),
+          content: const Text(
+            'Are you sure you want to delete this expense?',
+            style: TextStyle(color: Colors.white70),
+          ),
+          actions: [
+            TextButton(
                 onPressed: () {
-                  final updatedExpense = Expense(
-                    id: expense.id, // Retain the same id
-                    category: _categoryController.text,
-                    description: _descriptionController.text,
-                    amount: double.parse(_amountController.text),
-                    date: expense.date, // No change to the date
-                  );
-
                   Provider.of<ExpenseProvider>(context, listen: false)
-                      .updateExpense(expense.id!, updatedExpense)
+                      .deleteExpense(expense.id!)
                       .then((_) {
                     ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                      content: Text('Expense Updated successfully!'),
+                      content: Text('Expense Deleted successfully!'),
                     ));
                   }).catchError((onError) {
                     ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                        content: Text('Failed to update Expense')));
+                        content: Text('Failed to delete Expense')));
                   });
 
                   Navigator.of(ctx).pop();
                 },
-                child: const Text(
-                  'Save',
-                  style: TextStyle(color: Colors.white, fontSize: 15),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.redAccent,
                 ),
+                child: const Text(
+                  'Delete',
+                  style: TextStyle(color: Colors.white, fontSize: 15),
+                )),
+            TextButton(
+                onPressed: () {
+                  Navigator.of(ctx).pop();
+                },
+                child: const Text(
+                  'Cancel',
+                  style: TextStyle(color: Colors.white, fontSize: 15),
+                )),
+          ],
+        );
+      });
+}
+
+void _modifyExpense(BuildContext context, Expense expense) {
+  final _categoryController = TextEditingController(
+    text: expense.category,
+  );
+  final _descriptionController =
+      TextEditingController(text: expense.description);
+  final _amountController =
+      TextEditingController(text: expense.amount.toString());
+
+  showDialog(
+      context: context,
+      builder: (ctx) {
+        return AlertDialog(
+          backgroundColor: Colors.blue.shade900,
+          title: const Text(
+            'Modify Expense',
+            style: TextStyle(color: Colors.white),
+          ),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextFormField(
+                style: const TextStyle(color: Colors.white),
+                controller: _categoryController,
+                decoration: const InputDecoration(
+                  labelText: 'Category',
+                  labelStyle: TextStyle(color: Colors.white),
+                  errorStyle: TextStyle(color: Colors.yellow),
+                ),
+                validator: (value) =>
+                    value!.isEmpty ? 'Please Enter a category' : null,
               ),
-              TextButton(
-                  onPressed: () {
-                    Navigator.of(ctx).pop();
-                  },
-                  child: const Text(
-                    'Cancel',
-                    style: TextStyle(color: Colors.white, fontSize: 15),
-                  )),
+              TextFormField(
+                style: const TextStyle(color: Colors.white),
+                controller: _descriptionController,
+                decoration: const InputDecoration(
+                  labelText: 'Description',
+                  labelStyle: TextStyle(color: Colors.white),
+                  errorStyle: TextStyle(color: Colors.yellow),
+                ),
+                validator: (value) =>
+                    value!.isEmpty ? 'Please enter a description' : null,
+              ),
+              TextFormField(
+                style: const TextStyle(color: Colors.white),
+                controller: _amountController,
+                keyboardType: TextInputType.number,
+                decoration: const InputDecoration(
+                  labelText: 'Amount',
+                  labelStyle: TextStyle(color: Colors.white),
+                  errorStyle: TextStyle(color: Colors.yellow),
+                ),
+                validator: (value) =>
+                    value!.isEmpty || double.tryParse(value) == null
+                        ? 'Please enter a valid amount'
+                        : null,
+              ),
             ],
-          );
-        });
-  }
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                final updatedExpense = Expense(
+                  id: expense.id, // Retain the same id
+                  category: _categoryController.text,
+                  description: _descriptionController.text,
+                  amount: double.parse(_amountController.text),
+                  date: expense.date, // No change to the date
+                );
+
+                Provider.of<ExpenseProvider>(context, listen: false)
+                    .updateExpense(expense.id!, updatedExpense)
+                    .then((_) {
+                  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                    content: Text('Expense Updated successfully!'),
+                  ));
+                }).catchError((onError) {
+                  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                      content: Text('Failed to update Expense')));
+                });
+
+                Navigator.of(ctx).pop();
+              },
+              child: const Text(
+                'Save',
+                style: TextStyle(color: Colors.white, fontSize: 15),
+              ),
+            ),
+            TextButton(
+                onPressed: () {
+                  Navigator.of(ctx).pop();
+                },
+                child: const Text(
+                  'Cancel',
+                  style: TextStyle(color: Colors.white, fontSize: 15),
+                )),
+          ],
+        );
+      });
+}
